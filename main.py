@@ -1,11 +1,6 @@
-from tinydb import *
 import database as dbs
 
-db = TinyDB("DB.json")
-Card = Query()
-cards = db.table('cards')
-
-dbs.display_cards(cards.all())
+dbs.display_cards()
 print()
 
 
@@ -16,22 +11,44 @@ def menu():
         print("1.Add card")
         print("2.Delete card")
         print("3.Check balance")
-        print("4.Put money")
-        print("5.Get money")
+        print("4.Import money")
+        print("5.Withdraw money")
 
         choice = input("Please make a choice: ")
 
         if choice == "5":
-            print("Go to another menu")
+            dbs.display_cards()
+            op = int(input('Choose card: '))
+            dbs.withdraw_money(op)
+            dbs.balance(op)
+            op = input('Wanna continue?: ')
+            if op == 'N' or op == 'n':
+                break
         elif choice == "4":
-            print("Do Something 4")
+            dbs.display_cards()
+            op = int(input('Choose card: '))
+            dbs.import_money(op)
+            dbs.balance(op)
+            op = input('Wanna continue?: ')
+            if op == 'N' or op == 'n':
+                break
         elif choice == "3":
-            dbs.balance(cards.all())
-            dbs.total_balance(cards.all())
+            dbs.display_cards()
+            op = int(input('Choose card: '))
+            dbs.balance(op)
+            dbs.total_balance()
+            if op == 'N' or op == 'n':
+                break
         elif choice == "2":
-            dbs.delete_card(cards)
+            dbs.delete_card()
+            op = input('Wanna continue?: ')
+            if op == 'N' or op == 'n':
+                break
         elif choice == "1":
-            dbs.arr_card_db(cards)
+            dbs.arr_card_db()
+            op = input('Wanna continue?: ')
+            if op == 'N' or op == 'n':
+                break
         else:
             print("EXIT")
 
