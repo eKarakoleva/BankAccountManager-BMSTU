@@ -5,7 +5,8 @@ print()
 
 
 def menu():
-    choice = '0'
+    choice = input("Please make a choice: ")
+    print()
     while choice != '6':
         print("Main Choice: Choose 1 of 5 choices")
         print("1.Add card")
@@ -13,17 +14,23 @@ def menu():
         print("3.Check balance")
         print("4.Import money")
         print("5.Withdraw money")
+        print("6.Show all withdraws")
 
         choice = input("Please make a choice: ")
         print()
 
-        if choice == "5":
+        if choice == "6":
+            dbs.show_withdraws()
+            print()
+            op = input('Wanna continue?: ')
+            if op == 'N' or op == 'n':
+                break
+        elif choice == "5":
             display = dbs.display_cards()
             if display != 1:
                 print()
                 op = int(input('Choose card: '))
                 dbs.withdraw_money(op)
-                dbs.balance(op)
             op = input('Wanna continue?: ')
             if op == 'N' or op == 'n':
                 break
@@ -33,7 +40,6 @@ def menu():
                 print()
                 op = int(input('Choose card: '))
                 dbs.import_money(op)
-                dbs.balance(op)
             op = input('Wanna continue?: ')
             if op == 'N' or op == 'n':
                 break

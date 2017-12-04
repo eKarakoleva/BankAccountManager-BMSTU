@@ -14,3 +14,17 @@ class Card:
         return arr
 
 
+class Operation:
+    def __init__(self, arg):
+        self.card_id = arg[0]
+        self.operation = arg[1]
+        self.money = arg[2]
+        self.category = arg[3]
+
+    def create_operation(self):
+        arr = {'card_id': self.card_id, 'operation': self.operation,
+               'money': self.money, 'category': self.category}
+        return arr
+
+
+
