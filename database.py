@@ -1,31 +1,46 @@
 import classes as cl
 from tinydb import *
+import os
 
 
 db = TinyDB("DB.json")
+
 Card = Query()
 cards = db.table('cards')
 
 
+def empty_file():
+    if not cards.all():
+        return True
+    else:
+        return False
+
+
 def display_cards():
-    i = 0
-    all_cards = cards.all()
-    for card in all_cards:
-        print('%d) %s   %s' % (i+1, card['name'], card['bank']))
-        i += 1
+    if not empty_file():
+        i = 0
+        all_cards = cards.all()
+        for card in all_cards:
+            print('%d) %s   %s' % (i+1, card['name'], card['bank']))
+            i += 1
+    else:
+        print('No cards')
+        return 1
 
 
 def get_cards():
-    i = 0
     arr = []
-    all_cards = cards.all()
-    for card in all_cards:
-        arr.append(card)
-        i += 1
+    if not empty_file():
+        i = 0
+        all_cards = cards.all()
+        for card in all_cards:
+            arr.append(card)
+            i += 1
+        return arr
     return arr
 
 
-def arr_card_db():
+def add_card():
     arr = []
     en = input('Enter card name')
     arr.append(en)
@@ -42,15 +57,21 @@ def arr_card_db():
 
 
 def delete_card():
-    number = int(input('Please write card number in order to delete'))
-    cards.remove(where('number') == number)
-    print('Card is deleted!')
+    if not empty_file():
+        number = int(input('Please write card number in order to delete'))
+        cards.remove(where('number') == number)
+        print('Card is deleted!')
+    else:
+        print('There are no cards to be deleted!')
 
 
 def balance(option):
     ar = get_cards()
-    print('Balance: %f' % ar[option - 1]['balance'])
-    print()
+    if ar:
+        print('Balance: %f' % ar[option - 1]['balance'])
+        print()
+    else:
+        print('There are no cards!')
 
 
 def total_balance():
@@ -63,19 +84,25 @@ def total_balance():
 
 def import_money(option):
     ar = get_cards()
-    money = float(input('Amount of money you wanna insert: '))
-    new_balance = ar[option - 1]['balance'] + money
-    cards.update({'balance': new_balance}, Card.number == ar[option - 1]['number'])
-    print()
+    if ar:
+        money = float(input('Amount of money you wanna insert: '))
+        new_balance = ar[option - 1]['balance'] + money
+        cards.update({'balance': new_balance}, Card.number == ar[option - 1]['number'])
+        print()
+    else:
+        print('There are no cards!')
 
 
 def withdraw_money(option):
     ar = get_cards()
-    money = float(input('Amount of money you wanna withdraw: '))
-    new_balance = ar[option - 1]['balance'] - money
-    current_balance = ar[option - 1]['balance']
-    if money < current_balance:
-        cards.update({'balance': new_balance}, Card.number == ar[option - 1]['number'])
-    else:
-        print('Not enough money in the card!')
+    if ar:
+        money = float(input('Amount of money you wanna withdraw: '))
+        new_balance = ar[option - 1]['balance'] - money
+        current_balance = ar[option - 1]['balance']
+        if money < current_balance:
+            cards.update({'balance': new_balance}, Card.number == ar[option - 1]['number'])
+        else:
+            print('Not enough money in the card!')
+    return 1
+
 

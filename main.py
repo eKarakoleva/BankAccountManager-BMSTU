@@ -15,28 +15,36 @@ def menu():
         print("5.Withdraw money")
 
         choice = input("Please make a choice: ")
+        print()
 
         if choice == "5":
-            dbs.display_cards()
-            op = int(input('Choose card: '))
-            dbs.withdraw_money(op)
-            dbs.balance(op)
+            display = dbs.display_cards()
+            if display != 1:
+                print()
+                op = int(input('Choose card: '))
+                dbs.withdraw_money(op)
+                dbs.balance(op)
             op = input('Wanna continue?: ')
             if op == 'N' or op == 'n':
                 break
         elif choice == "4":
-            dbs.display_cards()
-            op = int(input('Choose card: '))
-            dbs.import_money(op)
-            dbs.balance(op)
+            display = dbs.display_cards()
+            if display != 1:
+                print()
+                op = int(input('Choose card: '))
+                dbs.import_money(op)
+                dbs.balance(op)
             op = input('Wanna continue?: ')
             if op == 'N' or op == 'n':
                 break
         elif choice == "3":
-            dbs.display_cards()
-            op = int(input('Choose card: '))
-            dbs.balance(op)
+            display = dbs.display_cards()
+            if display != 1:
+                print()
+                op = int(input('Choose card: '))
+                dbs.balance(op)
             dbs.total_balance()
+            op = input('Wanna continue?: ')
             if op == 'N' or op == 'n':
                 break
         elif choice == "2":
@@ -45,12 +53,13 @@ def menu():
             if op == 'N' or op == 'n':
                 break
         elif choice == "1":
-            dbs.arr_card_db()
+            dbs.add_card()
             op = input('Wanna continue?: ')
             if op == 'N' or op == 'n':
                 break
         else:
             print("EXIT")
+            break
 
 
 menu()
