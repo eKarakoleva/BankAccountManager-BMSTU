@@ -27,4 +27,13 @@ class Operation:
         return arr
 
 
+class Category:
+    def __init__(self, arg):
+        self.name = arg
+
+    def create_category(self):
+        arr = {'name': self.name}
+        return arr
+
+
 
