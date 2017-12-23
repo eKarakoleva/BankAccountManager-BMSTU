@@ -1,14 +1,20 @@
 import classes as cl
+#from datetime import datetime
 from tinydb import *
+from tinydb_serialization import SerializationMiddleware
 
+serialization = SerializationMiddleware()
+serialization.register_serializer(cl.DateTimeSerializer(), 'TinyDate')
+db = TinyDB("DB.json", storage = serialization)
 
-db = TinyDB("DB.json")
 
 Card = Query()
+History = Query()
 cards = db.table('cards')
 history = db.table('history')
 categories = db.table('categories')
 
+#cards.insert({'date': datetime.now()})
 
 def empty_cards_database():
     if not cards.all():
@@ -19,6 +25,12 @@ def empty_cards_database():
 
 def empty_categories_database():
     if not categories.all():
+        return True
+    else:
+        return False
+
+def empty_history_database():
+    if not history.all():
         return True
     else:
         return False
@@ -123,7 +135,7 @@ def import_money(option):
         money = float(input('Amount of money you wanna insert: '))
         new_balance = ar[option - 1]['balance'] + money
         cards.update({'balance': new_balance}, Card.number == ar[option - 1]['number'])
-        add_operation_import(ar, option, money, "import")
+        add_operation(ar, option, money, "import","")
         print()
     else:
         print('There are no cards!')
@@ -135,8 +147,8 @@ def choose_category_check(option):
     if len(cats) >= option:
         return cats[option - 1]['name']
     else:
+        del cats
         return "No category"
-    del cats
 
 
 def withdraw_money(option):
@@ -150,22 +162,15 @@ def withdraw_money(option):
             display_categories()
             op_category = int(input("Choose category"))
             cat_name = choose_category_check(op_category)
-            add_operation_withdraw(all_cards, option, money, "withdraw", cat_name)
+            add_operation(all_cards, option, money, "withdraw", cat_name)
         else:
             print('Not enough money in the card!')
     del all_cards
     return 1
 
 
-def add_operation_withdraw(b_card, option, money, op_type, op_category):
+def add_operation(b_card, option, money, op_type, op_category):
     data = [b_card[option - 1]['number'], op_type, money, op_category]
-    operation = cl.Operation(data)
-    entry = operation.create_operation()
-    history.insert(entry)
-
-
-def add_operation_import(b_card, option, money, op_type):
-    data = [b_card[option - 1]['number'], op_type, money]
     operation = cl.Operation(data)
     entry = operation.create_operation()
     history.insert(entry)
@@ -192,6 +197,7 @@ def delete_category(option):
         category = choose_category_check(option)
         if category != "No category":
             categories.remove(where('name') == category)
+            history.remove(where('category') == category)
             print('Category is deleted!')
         else:
             print("This is default category and can not be deleted!")
@@ -207,10 +213,14 @@ def search_operation(data):
                 name = cards.search(where('number') == operation['card_id'])
                 c_names[operation['card_id']] = name[0]['name']
                 del name
-
-            print('CARD: %s MONEY: %f OPERATION: %s' % (c_names[operation['card_id']],
+            if operation['category'] != "":
+                print('CARD: %s MONEY: %f OPERATION: %s' % (c_names[operation['card_id']],
                                                         operation['money'],
                                                         operation['category']))
+            else:
+                print('CARD: %s MONEY: %f' % (c_names[operation['card_id']],
+                                                            operation['money'],
+                                                            ))
         del c_names
         del data
     else:
@@ -226,7 +236,7 @@ def show_withdraws():
 def show_withdraws_card(option):
     ar = cards.all()
     card_num = ar[option - 1]['number']
-    data = history.search(where('card_id') == card_num)
+    data = history.search((History.card_id == card_num) & (History.operation == "withdraw"))
     search_operation(data)
     del ar
 
@@ -235,4 +245,38 @@ def show_withdraws_category(option):
     category = choose_category_check(option)
     data = history.search(where('category') == category)
     search_operation(data)
+
+
+def show_imports():
+    data = history.search(where('operation') == "import")
+    search_operation(data)
+    del data
+
+
+def show_imports_card(option):
+    ar = cards.all()
+    card_num = ar[option - 1]['number']
+    data = history.search((History.card_id == card_num) & (History.operation == "import"))
+    search_operation(data)
+    del ar
+
+
+def delete_history():
+    if not empty_history_database():
+        history.purge()
+
+
+def delete_history_card(option):
+    if not empty_history_database():
+        ar = cards.all()
+        card_num = ar[option - 1]['number']
+        history.remove(where('card_id') == card_num)
+
+
+def delete_history_category(option):
+    if not empty_history_database():
+        category = choose_category_check(option)
+        history.remove(where('category') == category)
+
+
 

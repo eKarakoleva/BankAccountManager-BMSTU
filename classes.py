@@ -1,3 +1,7 @@
+from datetime import datetime
+from tinydb_serialization import Serializer
+
+
 class Card:
 
     def __init__(self, arg):
@@ -35,5 +39,14 @@ class Category:
         arr = {'name': self.name}
         return arr
 
+
+class DateTimeSerializer(Serializer):
+    OBJ_CLASS = datetime  # The class this serializer handles
+
+    def encode(self, obj):
+        return obj.strftime('%Y-%m-%dT%H:%M:%S')
+
+    def decode(self, s):
+        return datetime.strptime(s, '%Y-%m-%dT%H:%M:%S')
 
 
