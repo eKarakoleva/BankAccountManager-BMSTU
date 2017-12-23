@@ -1,37 +1,49 @@
 import database as dbs
+from tkinter import *
+
 
 def menu():
-    #choice = input("Please make a choice: ")
     print()
     while 1:
-        print("Main Choice: Choose 1 of 5 choices")
         print("Actions with cards:")
         print("   1.Add card")
         print("   2.Delete card")
-        print("   3.Check balance")
-        print("   4.Import money")
-        print("   5.Withdraw money")
+        print("   3.Import money")
+        print("   4.Withdraw money")
         print("Actions with categories:")
-        print("   6.Create category")
-        print("   7.Delete category")
-        print("   8.Show all categories")
+        print("   5.Create category")
+        print("   6.Delete category")
+        print("   7.Show all categories")
         print("Information:")
+        print("   8.Check balance")
         print("   9.Show all withdraws")
         print("      9.1 Show withdraws by card")
         print("      9.2 Show withdraws by category")
-        print("   10.Show all imports")
-        print("      10.1 Show imports by card")
+        print("   10.Show transfers")
+        print("   11.Show all imports")
+        print("      11.1 Show imports by card")
         print("Actions with history:")
-        print("   11.Delete all")
-        print("      11.1.Delete by card")
-        print("      11.2.Delete by category")
-        print("~Transfers")
-        print("   ~12.Transfer between cards")
+        print("   12.Delete all")
+        print("      12.1 Delete by card")
+        print("      12.2 Delete by category")
+        print("Transfers")
+        print("   13.Transfer between cards")
         print("")
 
         choice = input("Please make a choice: ")
         print()
-        if choice == "11.2":
+        if choice == "13":
+            display = dbs.display_cards()
+            if display != 1:
+                print()
+                op1 = int(input('Choose a card to withdraw from: '))
+                op2 = int(input('Choose a card to insert in: '))
+                money = float(input('Amount of money you wanna insert: '))
+                dbs.transfer(op1, op2, money)
+            op = input('Wanna continue?: ')
+            if op == 'N' or op == 'n':
+                break
+        elif choice == "12.2":
             display = dbs.display_categories()
             if display != 1:
                 print()
@@ -40,7 +52,7 @@ def menu():
             op = input('Wanna continue?: ')
             if op == 'N' or op == 'n':
                 break
-        elif choice == "11.1":
+        elif choice == "12.1":
             display = dbs.display_cards()
             if display != 1:
                 print()
@@ -49,7 +61,7 @@ def menu():
             op = input('Wanna continue?: ')
             if op == 'N' or op == 'n':
                 break
-        elif choice == "11":
+        elif choice == "12":
             op = input('Are you sure you want to delete all history?')
             if op == 'Y' or op == 'y':
                 dbs.delete_history()
@@ -58,7 +70,7 @@ def menu():
             op = input('Wanna continue?: ')
             if op == 'N' or op == 'n':
                 break
-        elif choice == "10.1":
+        elif choice == "11.1":
             display = dbs.display_cards()
             if display != 1:
                 print()
@@ -67,8 +79,14 @@ def menu():
             op = input('Wanna continue?: ')
             if op == 'N' or op == 'n':
                 break
-        elif choice == "10":
+        elif choice == "11":
             dbs.show_imports()
+            op = input('Wanna continue?: ')
+            if op == 'N' or op == 'n':
+                break
+        elif choice == "10":
+            dbs.show_transfers()
+            print()
             op = input('Wanna continue?: ')
             if op == 'N' or op == 'n':
                 break
@@ -87,7 +105,6 @@ def menu():
                 print()
                 op = int(input('Choose card: '))
                 dbs.show_withdraws_card(op)
-
             op = input('Wanna continue?: ')
             if op == 'N' or op == 'n':
                 break
@@ -98,11 +115,21 @@ def menu():
             if op == 'N' or op == 'n':
                 break
         elif choice == "8":
-            dbs.display_categories()
+            display = dbs.display_cards()
+            if display != 1:
+                print()
+                op = int(input('Choose card: '))
+                dbs.balance(op)
+            dbs.total_balance()
             op = input('Wanna continue?: ')
             if op == 'N' or op == 'n':
                 break
         elif choice == "7":
+            dbs.display_categories()
+            op = input('Wanna continue?: ')
+            if op == 'N' or op == 'n':
+                break
+        elif choice == "6":
             display = dbs.display_categories()
             if display != 1:
                 print()
@@ -111,18 +138,9 @@ def menu():
             op = input('Wanna continue?: ')
             if op == 'N' or op == 'n':
                 break
-        elif choice == "6":
+        elif choice == "5":
             name = input("Write category: ")
             dbs.create_category(name)
-            op = input('Wanna continue?: ')
-            if op == 'N' or op == 'n':
-                break
-        elif choice == "5":
-            display = dbs.display_cards()
-            if display != 1:
-                print()
-                op = int(input('Choose card: '))
-                dbs.withdraw_money(op)
             op = input('Wanna continue?: ')
             if op == 'N' or op == 'n':
                 break
@@ -131,7 +149,11 @@ def menu():
             if display != 1:
                 print()
                 op = int(input('Choose card: '))
-                dbs.import_money(op)
+                money = float(input('Amount of money you wanna withdraw: '))
+                dbs.display_categories()
+                op_category = int(input("Choose category"))
+                op_description = input("Add description (optional): ")
+                dbs.withdraw_money(op,money,op_category,op_description)
             op = input('Wanna continue?: ')
             if op == 'N' or op == 'n':
                 break
@@ -140,8 +162,8 @@ def menu():
             if display != 1:
                 print()
                 op = int(input('Choose card: '))
-                dbs.balance(op)
-            dbs.total_balance()
+                money = float(input('Amount of money you wanna insert: '))
+                dbs.import_money(op,money)
             op = input('Wanna continue?: ')
             if op == 'N' or op == 'n':
                 break

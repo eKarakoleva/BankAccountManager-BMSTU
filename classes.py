@@ -24,10 +24,12 @@ class Operation:
         self.operation = arg[1]
         self.money = arg[2]
         self.category = arg[3]
+        self.description = arg[4]
 
     def create_operation(self):
         arr = {'card_id': self.card_id, 'operation': self.operation,
-               'money': self.money, 'category': self.category}
+               'money': self.money, 'category': self.category,
+               'description': self.description}
         return arr
 
 
