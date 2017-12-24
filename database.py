@@ -1,7 +1,8 @@
 import classes as cl
-#from datetime import datetime
 from tinydb import *
 from tinydb_serialization import SerializationMiddleware
+from time import gmtime, strftime
+from datetime import datetime, timedelta
 
 serialization = SerializationMiddleware()
 serialization.register_serializer(cl.DateTimeSerializer(), 'TinyDate')
@@ -14,7 +15,6 @@ cards = db.table('cards')
 history = db.table('history')
 categories = db.table('categories')
 default_cat = ["No caregory", "Transfer"]
-#cards.insert({'date': datetime.now()})
 
 def empty_cards_database():
     if not cards.all():
@@ -64,14 +64,10 @@ def display_categories():
 
 
 def check_id(new_id):
-    b_cards = cards.all()
-    for card in b_cards:
-        if card['number'] == new_id:
-            del b_cards
-            return True
-        else:
-            del b_cards
-            return False
+    if cards.contains(Card.number == new_id):
+        return True
+    else:
+        return False
 
 
 def add_card():
@@ -134,7 +130,7 @@ def total_balance():
     print()
 
 
-def import_money(option,money):
+def import_money(option, money):
     ar = cards.all()
     option = abs(option)
     if len(ar) < option:
@@ -142,7 +138,7 @@ def import_money(option,money):
         del ar
         return 1
     if ar:
-        new_balance = ar[option - 1]['balance'] + abs(money)
+        new_balance = ar[option - 1]['balance'] + abs(round(money, 2))
         cards.update({'balance': new_balance}, Card.number == ar[option - 1]['number'])
         add_operation(ar, option, money, "import", "", "")
         print("Success!")
@@ -161,12 +157,12 @@ def choose_category_check(option):
         return default_cat[0]
 
 
-def withdraw_money(option,money,op_category,op_description):
+def withdraw_money(option, money, op_category, op_description):
     all_cards = cards.all()
     option = abs(option)
     if len(all_cards) >= option:
         if all_cards:
-            new_balance = all_cards[option - 1]['balance'] - abs(money)
+            new_balance = all_cards[option - 1]['balance'] - abs(round(money, 2))
             current_balance = all_cards[option - 1]['balance']
             if money < current_balance:
                 cards.update({'balance': new_balance}, Card.number == all_cards[option - 1]['number'])
@@ -174,7 +170,7 @@ def withdraw_money(option,money,op_category,op_description):
                     cat_name = choose_category_check(op_category)
                 else:
                     cat_name = default_cat[1]
-                add_operation(all_cards, option, money, "withdraw", cat_name,op_description)
+                add_operation(all_cards, option, money, "withdraw", cat_name, op_description)
             else:
                 print('Not enough money in the card!')
     else:
@@ -184,7 +180,8 @@ def withdraw_money(option,money,op_category,op_description):
 
 
 def add_operation(b_card, option, money, op_type, op_category, op_description):
-    data = [b_card[option - 1]['number'], op_type, money, op_category,op_description]
+    date_time = strftime("%Y-%m-%d %H:%M:%S", gmtime()).split(" ")
+    data = [b_card[option - 1]['number'], op_type, money, op_category, op_description, date_time[0], date_time[1]]
     operation = cl.Operation(data)
     entry = operation.create_operation()
     history.insert(entry)
@@ -231,13 +228,14 @@ def search_operation(data):
                 c_names[operation['card_id']] = name[0]['name']
                 del name
             if operation['category'] != "":
-                print('CARD: %s \nMONEY: %f \nCATEGORY: %s \nDESCRIPTION: %s\n' % (c_names[operation['card_id']],
-                                                        operation['money'],
-                                                        operation['category'],
-                                                        operation['description']))
+                print('CARD: %s \nMONEY: %.2f \nCATEGORY: %s \nDESCRIPTION: %s\nDATE: %s\nTIME: %s\n'
+                      % (c_names[operation['card_id']], operation['money'], operation['category'],
+                        operation['description'], operation['date'],
+                        operation['time']))
             else:
-                print('CARD: %s \nMONEY: %f \n' % (c_names[operation['card_id']],
-                                                            operation['money']))
+                print('CARD: %s \nMONEY: %.2f \nDATE:%s\nTIME: %s\n' % (c_names[operation['card_id']],
+                                                            operation['money'], operation['date'],
+                                                            operation['time']))
         del c_names
         del data
     else:
@@ -325,3 +323,9 @@ def show_transfers():
     data = history.search(where('category') == default_cat[1])
     search_operation(data)
     del data
+
+
+def operations_today(search_op):
+    date_now = strftime("%Y-%m-%d %H:%M:%S", gmtime()).split(" ")
+    data = history.search((History.date == date_now[0]) & (History.operation == search_op))
+    search_operation(data)

@@ -25,11 +25,13 @@ class Operation:
         self.money = arg[2]
         self.category = arg[3]
         self.description = arg[4]
+        self.date = arg[5]
+        self.time = arg[6]
 
     def create_operation(self):
         arr = {'card_id': self.card_id, 'operation': self.operation,
                'money': self.money, 'category': self.category,
-               'description': self.description}
+               'description': self.description, 'date': self.date, 'time': self.time}
         return arr
 
 
@@ -46,9 +48,10 @@ class DateTimeSerializer(Serializer):
     OBJ_CLASS = datetime  # The class this serializer handles
 
     def encode(self, obj):
-        return obj.strftime('%Y-%m-%dT%H:%M:%S')
+        return obj.strftime('%Y-%m-%d %H:%M:%S')
 
     def decode(self, s):
-        return datetime.strptime(s, '%Y-%m-%dT%H:%M:%S')
+        return datetime.strptime(s, '%Y-%m-%d %H:%M:%S')
+
 
 

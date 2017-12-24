@@ -1,5 +1,5 @@
 import database as dbs
-from tkinter import *
+from tinydb import *
 
 
 def menu():
@@ -19,9 +19,11 @@ def menu():
         print("   9.Show all withdraws")
         print("      9.1 Show withdraws by card")
         print("      9.2 Show withdraws by category")
+        print("      9.3 Show withdraws by date (today)")
         print("   10.Show transfers")
         print("   11.Show all imports")
         print("      11.1 Show imports by card")
+        print("      11.2 Show imports by date (today)")
         print("Actions with history:")
         print("   12.Delete all")
         print("      12.1 Delete by card")
@@ -33,13 +35,23 @@ def menu():
         choice = input("Please make a choice: ")
         print()
         if choice == "13":
-            display = dbs.display_cards()
-            if display != 1:
-                print()
-                op1 = int(input('Choose a card to withdraw from: '))
-                op2 = int(input('Choose a card to insert in: '))
-                money = float(input('Amount of money you wanna insert: '))
-                dbs.transfer(op1, op2, money)
+            db = TinyDB("DB.json")
+            cards = db.table('cards')
+            if len(cards.all()) > 1:
+                display = dbs.display_cards()
+                if display != 1:
+                    print()
+                    op1 = int(input('Choose a card to withdraw from: '))
+                    op2 = int(input('Choose a card to insert in: '))
+                    if op1 != op2:
+                        money = float(input('Amount of money you wanna insert: '))
+                        dbs.transfer(op1, op2, money)
+                    else:
+                        print("You must have 2 or more cards to make this operation")
+            else:
+                print("You have only one card!")
+            del cards
+            del db
             op = input('Wanna continue?: ')
             if op == 'N' or op == 'n':
                 break
@@ -70,6 +82,11 @@ def menu():
             op = input('Wanna continue?: ')
             if op == 'N' or op == 'n':
                 break
+        elif choice == "11.2":
+            dbs. operations_today("import")
+            op = input('Wanna continue?: ')
+            if op == 'N' or op == 'n':
+                break
         elif choice == "11.1":
             display = dbs.display_cards()
             if display != 1:
@@ -87,6 +104,11 @@ def menu():
         elif choice == "10":
             dbs.show_transfers()
             print()
+            op = input('Wanna continue?: ')
+            if op == 'N' or op == 'n':
+                break
+        elif choice == "9.3":
+            dbs.operations_today("withdraw")
             op = input('Wanna continue?: ')
             if op == 'N' or op == 'n':
                 break
