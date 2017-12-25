@@ -219,24 +219,29 @@ def delete_category(option):
         print('There are no categories to be deleted!')
 
 
+def print_res(operation, c_names):
+    if operation['card_id'] not in c_names:
+        name = cards.search(where('number') == operation['card_id'])
+        c_names[operation['card_id']] = name[0]['name']
+        del name
+    if operation['category'] != "":
+        print('CARD: %s \nMONEY: %.2f \nCATEGORY: %s \nDESCRIPTION: %s\nDATE: %s\nTIME: %s\n'
+              % (c_names[operation['card_id']], operation['money'], operation['category'],
+                 operation['description'], operation['date'],
+                 operation['time']))
+    else:
+        print('CARD: %s \nMONEY: %.2f \nDATE:%s\nTIME: %s\n' % (c_names[operation['card_id']],
+                                                                operation['money'], operation['date'],
+                                                                operation['time']))
+    del c_names
+
+
 def search_operation(data):
     if data:
         c_names = {}
         for operation in data:
-            if operation['card_id'] not in c_names:
-                name = cards.search(where('number') == operation['card_id'])
-                c_names[operation['card_id']] = name[0]['name']
-                del name
-            if operation['category'] != "":
-                print('CARD: %s \nMONEY: %.2f \nCATEGORY: %s \nDESCRIPTION: %s\nDATE: %s\nTIME: %s\n'
-                      % (c_names[operation['card_id']], operation['money'], operation['category'],
-                        operation['description'], operation['date'],
-                        operation['time']))
-            else:
-                print('CARD: %s \nMONEY: %.2f \nDATE:%s\nTIME: %s\n' % (c_names[operation['card_id']],
-                                                            operation['money'], operation['date'],
-                                                            operation['time']))
-        del c_names
+            print_res(operation, c_names)
+
         del data
     else:
         print("Nothing found!")
@@ -329,3 +334,14 @@ def operations_today(search_op):
     date_now = strftime("%Y-%m-%d %H:%M:%S", gmtime()).split(" ")
     data = history.search((History.date == date_now[0]) & (History.operation == search_op))
     search_operation(data)
+
+
+def search_by_month(month, his_operation):
+    his = history.all()
+    c_names = {}
+    for entry in his:
+        date = entry['date'].split("-")
+        if int(date[1]) == month and entry['operation'] == his_operation:
+            print_res(entry, c_names)
+
+
