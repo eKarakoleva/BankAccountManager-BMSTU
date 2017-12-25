@@ -100,9 +100,18 @@ def add_card():
 def delete_card():
     if not empty_cards_database():
         number = int(input('Please write card number in order to delete'))
-        cards.remove(where('number') == number)
-        history.remove(where('card_id') == number)
-        print('Card is deleted!')
+        card_info = cards.search(where('number') == number)
+        if int(card_info[0]['balance']) > 0:
+            op = input("You have money in your card. Are you sure you want to delete it?")
+            if op == "Y" or op == "y":
+                cards.remove(where('number') == number)
+                history.remove(where('card_id') == number)
+                print('Card is deleted!')
+            else:
+                print("Operation is canceled")
+        else:
+            cards.remove(where('number') == number)
+            history.remove(where('card_id') == number)
     else:
         print('There are no cards to be deleted!')
 
