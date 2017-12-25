@@ -16,27 +16,29 @@ def menu():
         print("   7.Show all categories")
         print("Information:")
         print("   8.Check balance")
-        print("   9.Show all withdraws")
-        print("      9.1 Show withdraws by card")
-        print("      9.2 Show withdraws by category")
-        print("      9.3 Show withdraws by date (today)")
-        print("      9.4 Show withdraws by month")
-        print("   10.Show transfers")
-        print("   11.Show all imports")
-        print("      11.1 Show imports by card")
-        print("      11.2 Show imports by date (today)")
-        print("      11.3 Show imports by month")
+        print("   9.Show chart of imports and withdraws by month")
+        print("   10.Show chart of withdraws by category")
+        print("   11.Show all withdraws")
+        print("      11.1 Show withdraws by card")
+        print("      11.2 Show withdraws by category")
+        print("      11.3 Show withdraws by date (today)")
+        print("      11.4 Show withdraws by month")
+        print("   12.Show transfers")
+        print("   13.Show all imports")
+        print("      13.1 Show imports by card")
+        print("      13.2 Show imports by date (today)")
+        print("      13.3 Show imports by month")
         print("Actions with history:")
-        print("   12.Delete all")
-        print("      12.1 Delete by card")
-        print("      12.2 Delete by category")
+        print("   14.Delete all")
+        print("      14.1 Delete by card")
+        print("      14.2 Delete by category")
         print("Transfers")
-        print("   13.Transfer between cards")
+        print("   15.Transfer between cards")
         print("")
 
         choice = input("Please make a choice: ")
         print()
-        if choice == "13":
+        if choice == "15":
             db = TinyDB("DB.json")
             cards = db.table('cards')
             if len(cards.all()) > 1:
@@ -57,7 +59,7 @@ def menu():
             op = input('Wanna continue?: ')
             if op == 'N' or op == 'n':
                 break
-        elif choice == "12.2":
+        elif choice == "14.2":
             display = dbs.display_categories()
             if display != 1:
                 print()
@@ -66,7 +68,7 @@ def menu():
             op = input('Wanna continue?: ')
             if op == 'N' or op == 'n':
                 break
-        elif choice == "12.1":
+        elif choice == "14.1":
             display = dbs.display_cards()
             if display != 1:
                 print()
@@ -75,7 +77,7 @@ def menu():
             op = input('Wanna continue?: ')
             if op == 'N' or op == 'n':
                 break
-        elif choice == "12":
+        elif choice == "14":
             op = input('Are you sure you want to delete all history?')
             if op == 'Y' or op == 'y':
                 dbs.delete_history()
@@ -84,7 +86,7 @@ def menu():
             op = input('Wanna continue?: ')
             if op == 'N' or op == 'n':
                 break
-        elif choice == "11.3":
+        elif choice == "13.3":
             month = int(input("Enter number of a month you want to check (1 to 12)"))
             if month <= 12:
                 dbs.search_by_month(month, "import")
@@ -93,12 +95,12 @@ def menu():
             op = input('Wanna continue?: ')
             if op == 'N' or op == 'n':
                 break
-        elif choice == "11.2":
+        elif choice == "13.2":
             dbs. operations_today("import")
             op = input('Wanna continue?: ')
             if op == 'N' or op == 'n':
                 break
-        elif choice == "11.1":
+        elif choice == "13.1":
             display = dbs.display_cards()
             if display != 1:
                 print()
@@ -107,23 +109,23 @@ def menu():
             op = input('Wanna continue?: ')
             if op == 'N' or op == 'n':
                 break
-        elif choice == "11":
+        elif choice == "13":
             dbs.show_imports()
             op = input('Wanna continue?: ')
             if op == 'N' or op == 'n':
                 break
-        elif choice == "10":
+        elif choice == "12":
             dbs.show_transfers()
             print()
             op = input('Wanna continue?: ')
             if op == 'N' or op == 'n':
                 break
-        elif choice == "9.3":
+        elif choice == "11.3":
             dbs.operations_today("withdraw")
             op = input('Wanna continue?: ')
             if op == 'N' or op == 'n':
                 break
-        elif choice == "9.4":
+        elif choice == "11.4":
             month = int(input("Enter number of a month you want to check (1 to 12)"))
             if month <= 12:
                 dbs.search_by_month(month, "withdraw")
@@ -132,7 +134,7 @@ def menu():
             op = input('Wanna continue?: ')
             if op == 'N' or op == 'n':
                 break
-        elif choice == "9.2":
+        elif choice == "11.2":
             display = dbs.display_categories()
             if display != 1:
                 print()
@@ -141,7 +143,7 @@ def menu():
             op = input('Wanna continue?: ')
             if op == 'N' or op == 'n':
                 break
-        elif choice == "9.1":
+        elif choice == "11.1":
             display = dbs.display_cards()
             if display != 1:
                 print()
@@ -150,9 +152,24 @@ def menu():
             op = input('Wanna continue?: ')
             if op == 'N' or op == 'n':
                 break
-        elif choice == "9":
+        elif choice == "11":
             dbs.show_withdraws()
             print()
+            op = input('Wanna continue?: ')
+            if op == 'N' or op == 'n':
+                break
+        elif choice == "10":
+            dbs.chart_operation_category()
+            print()
+            op = input('Wanna continue?: ')
+            if op == 'N' or op == 'n':
+                break
+        elif choice == "9":
+            month = int(input("Enter number of a month you want to check (1 to 12)"))
+            if month <= 12:
+                dbs.chart_operation_month(month)
+            else:
+                print("Enter number between 1 and 12")
             op = input('Wanna continue?: ')
             if op == 'N' or op == 'n':
                 break

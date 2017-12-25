@@ -2,7 +2,9 @@ import classes as cl
 from tinydb import *
 from tinydb_serialization import SerializationMiddleware
 from time import gmtime, strftime
-from datetime import datetime, timedelta
+import matplotlib.pyplot as plt; plt.rcdefaults()
+import numpy as np
+import matplotlib.pyplot as plt
 
 serialization = SerializationMiddleware()
 serialization.register_serializer(cl.DateTimeSerializer(), 'TinyDate')
@@ -14,7 +16,8 @@ History = Query()
 cards = db.table('cards')
 history = db.table('history')
 categories = db.table('categories')
-default_cat = ["No caregory", "Transfer"]
+default_cat = ["No category", "Transfer"]
+
 
 def empty_cards_database():
     if not cards.all():
@@ -354,3 +357,55 @@ def search_by_month(month, his_operation):
             print_res(entry, c_names)
 
 
+def get_month_money(month, his_operation):
+    his = history.all()
+    month_money = 0
+    if his:
+        for entry in his:
+            date = entry['date'].split("-")
+            if int(date[1]) == month and entry['operation'] == his_operation:
+                month_money += entry['money']
+    return month_money
+
+
+
+def chart_operation_month(month):
+    w_money = get_month_money(month, "withdraw")
+    i_money = get_month_money(month, "import")
+
+    objects = ('Withdraws', 'Imports')
+    y_pos = np.arange(len(objects))
+    money = [w_money, i_money]
+
+    plt.bar(y_pos, money, align='center', alpha=0.5)
+    plt.xticks(y_pos, objects)
+    plt.ylabel('Money')
+    plt.title('Money moving')
+    plt.show()
+
+
+def get_sum_withdraws_category(o_categoty):
+    data = history.search((History.category == o_categoty) & (History.operation == "withdraw"))
+    sum_money = 0
+    if data:
+        for entry in data:
+            sum_money += entry['money']
+    return sum_money
+
+
+def chart_operation_category():
+    cats = categories.all()
+    money = []
+    objects = []
+    for category in cats:
+        money.append(get_sum_withdraws_category(category['name']))
+        objects.append(category['name'])
+    money.append(get_sum_withdraws_category(default_cat[0]))
+    objects.append(default_cat[0])
+
+    y_pos = np.arange(len(objects))
+    plt.bar(y_pos, money, align='center', alpha=0.5)
+    plt.xticks(y_pos, objects)
+    plt.ylabel('Money')
+    plt.title('Withdraws by category')
+    plt.show()
